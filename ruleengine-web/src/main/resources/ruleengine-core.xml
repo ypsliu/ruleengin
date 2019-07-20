@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:cache="http://www.springframework.org/schema/cache"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+               http://www.springframework.org/schema/beans/spring-beans.xsd
+               http://www.springframework.org/schema/context
+               http://www.springframework.org/schema/context/spring-context.xsd
+               http://www.springframework.org/schema/tx
+               http://www.springframework.org/schema/tx/spring-tx.xsd
+               http://www.springframework.org/schema/aop
+               http://www.springframework.org/schema/aop/spring-aop.xsd
+               http://www.springframework.org/schema/cache
+               http://www.springframework.org/schema/cache/spring-cache.xsd">
+
+	<context:property-placeholder location="file:${APP_HOME}/conf/ruleengine-core.properties"/>
+    
+	<!-- DataSource -->
+    <bean id="abstractDataSource" abstract="true" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="initialSize" value="0"/>
+        <property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<property name="testWhileIdle" value="true" />
+		<property name="removeAbandoned" value="false" />
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<property name="minEvictableIdleTimeMillis" value="25200000" />
+		<property name="filters" value="mergeStat" />
+		<property name="validationQuery" value="${db.main.validationSql}" />
+    </bean>
+    
+    <!-- main -->
+    <bean id="mainDataSource" parent="abstractDataSource">
+	    <property name="username" value="${db.main.user}"/>
+		<property name="password" value="${db.main.password}"/>
+		<property name="maxActive" value="${db.main.maxPoolSize}"/>
+		<property name="url" value="${db.main.jdbcUrl}" />
+	</bean>
+	
+    <!-- SessionFactory -->
+    <bean id="abstractSessionFactory" abstract="true" class="org.mybatis.spring.SqlSessionFactoryBean"/>
+    
+    <!-- main -->
+    <bean id="mainSessionFactory" parent="abstractSessionFactory">
+		<property name="dataSource" ref="mainDataSource" />
+	</bean>
+	
+	<!-- TransactionManager -->
+	<bean id="abstractTransactionManager" abstract="true" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"/>
+	
+	<!-- main -->
+	<bean id="mainTransactionManager" parent="abstractTransactionManager">
+		<property name="dataSource" ref="mainDataSource" />
+	</bean>
+	
+	<!-- Transaction -->
+	<tx:annotation-driven transaction-manager="mainTransactionManager" order="1100"/>
+	
+	<!-- date time provider -->
+	<bean id="localDatetimeProvider" class="cn.rongcapital.ruleengine.utils.LocalDatetimeProvider"/>
+	
+	<!-- dao -->
+	<bean id="datasourceManagerDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="cn.rongcapital.ruleengine.core.DatasourceManagerDao" />
+		<property name="sqlSessionFactory" ref="mainSessionFactory" />
+	</bean>
+	<bean id="bizTypeDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="cn.rongcapital.ruleengine.core.BizTypeDao" />
+		<property name="sqlSessionFactory" ref="mainSessionFactory" />
+	</bean>
+	<bean id="ruleDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="cn.rongcapital.ruleengine.core.RuleDao" />
+		<property name="sqlSessionFactory" ref="mainSessionFactory" />
+	</bean>
+	<bean id="resultDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="cn.rongcapital.ruleengine.core.ResultDao" />
+		<property name="sqlSessionFactory" ref="mainSessionFactory" />
+	</bean>
+	<bean id="referenceDataDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="cn.rongcapital.ruleengine.core.ReferenceDataDao" />
+		<property name="sqlSessionFactory" ref="mainSessionFactory" />
+	</bean>
+    
+    <!-- service -->
+    <bean id="datasourceManager" class="cn.rongcapital.ruleengine.core.DatasourceManagerImpl" />
+    <bean id="bizTypeService" class="cn.rongcapital.ruleengine.core.BizTypeServiceImpl" />
+    <bean id="ruleService" class="cn.rongcapital.ruleengine.core.RuleServiceImpl" />
+    <bean id="resultService" class="cn.rongcapital.ruleengine.core.ResultServiceImpl" />
+    <bean id="matchService" class="cn.rongcapital.ruleengine.core.MatchServiceImpl" />
+    <bean id="dataExtractor" class="cn.rongcapital.ruleengine.core.DataExtractorImpl" >
+    	<!-- 
+    	<property name="tradeDataProviderAgent" ref="tradeDataProviderAgent"/>
+    	 -->
+    </bean>
+    <bean id="connectionHolder" class="cn.rongcapital.ruleengine.core.ConnectionHolderImpl" />
+    <bean id="dbHelper" class="cn.rongcapital.ruleengine.core.DbHelperImpl"/>
+    <bean id="referenceDataService" class="cn.rongcapital.ruleengine.core.ReferenceDataServiceImpl" />
+    <bean id="referenceDataDefaultProcessor" class="cn.rongcapital.ruleengine.core.ReferenceDataDefaultProcessor" />
+    <bean id="w2dReferenceDataProviderClient" class="cn.rongcapital.ruleengine.core.w2d.W2dReferenceDataProviderClient" />
+    <bean id="w2dResourceAgent" class="cn.rongcapital.ruleengine.core.w2d.W2dResourceAgentImpl" />
+    <!-- 
+    <bean id="tradeDataProviderAgent" class="cn.rongcapital.ruleengine.core.trade.TradeDataProviderAgentImpl" />
+     -->
+    
+    <!-- rule expression builder -->
+    <bean id="ruleExpressionBuilder" class="cn.rongcapital.ruleengine.executor.JexlRuleExpressionBuilder"/>
+    
+    <!-- execution plugins -->
+    <bean id="cellPhoneNumberValidator" class="cn.rongcapital.ruleengine.executor.plugins.CellPhoneNumberValidator">
+    	<property name="validationPattern" value="${plugins.CellPhoneNumberValidator.validationPattern}"/>
+    </bean>
+    <bean id="fixedPhoneNumberValidator" class="cn.rongcapital.ruleengine.executor.plugins.FixedPhoneNumberValidator">
+    	<property name="validationPattern" value="${plugins.FixedPhoneNumberValidator.validationPattern}"/>
+    </bean>
+    <bean id="idCardNumberAgeGetter" class="cn.rongcapital.ruleengine.executor.plugins.IdCardNumberAgeGetter">
+    	<property name="datetimeProvider" ref="localDatetimeProvider"/>
+    </bean>
+    <bean id="idCardNumberValidator" class="cn.rongcapital.ruleengine.executor.plugins.IdCardNumberValidator">
+    	<property name="validationPattern15" value="${plugins.IdCardNumberValidator.validationPattern15}"/>
+    	<property name="validationPattern18" value="${plugins.IdCardNumberValidator.validationPattern18}"/>
+    </bean>
+    <bean id="dbAccessor" class="cn.rongcapital.ruleengine.executor.plugins.DbAccessor">
+    	<property name="connectionHolder" ref="connectionHolder"/>
+    	<property name="datasourceManager" ref="datasourceManager"/>
+    	<property name="dbHelper" ref="dbHelper"/>
+    </bean>
+    <bean id="stringToArray" class="cn.rongcapital.ruleengine.executor.plugins.StringToArray">
+    </bean>
+    <bean id="stringToSet" class="cn.rongcapital.ruleengine.executor.plugins.StringToSet">
+    </bean>
+    <bean id="checkContacts" class="cn.rongcapital.ruleengine.executor.plugins.CheckContacts">
+    	<property name="cellPhonevalidationPattern" value="${plugins.CellPhoneNumberValidator.validationPattern}"/>
+    	<property name="fixedPhonevalidationPattern" value="${plugins.FixedPhoneNumberValidator.validationPattern}"/>
+    </bean>
+    
+    <!-- execution id generator -->
+    <bean id="executionIdGenerator" class="cn.rongcapital.ruleengine.executor.DefaultExecutionIdGenerator"/>
+    
+    <!-- execution tracer -->
+    <bean id="executionTracer" class="cn.rongcapital.ruleengine.executor.trace.ThreadLocalExecutionTracer">
+    	<property name="executionIdGenerator" ref="executionIdGenerator"/>
+    </bean>
+    
+    <!-- rule caller -->
+    <bean id="ruleCaller" class="cn.rongcapital.ruleengine.executor.RuleCallerImpl">
+    	<property name="ruleService" ref="ruleService"/>
+    	<property name="executionTracer" ref="executionTracer"/>
+    	<property name="acceptanceExecutor" ref="acceptanceExecutor"/>
+    	<property name="scoreExecutor" ref="scoreExecutor"/>
+    	<property name="textExecutor" ref="textExecutor"/>
+    </bean>
+    
+    <!-- executors -->
+	<bean id="abstractExecutor" class="cn.rongcapital.ruleengine.executor.JexlBaseExecutor" abstract="true">
+    	<property name="datetimeProvider" ref="localDatetimeProvider"/>
+    	<property name="plugins">
+    		<list>
+    			<ref bean="cellPhoneNumberValidator"/>
+    			<ref bean="idCardNumberAgeGetter"/>
+    			<ref bean="idCardNumberValidator"/>
+    			<ref bean="dbAccessor"/>
+    			<ref bean="stringToArray"/>
+    			<ref bean="stringToSet"/>
+    			<ref bean="checkContacts"/>
+    			<ref bean="fixedPhoneNumberValidator"/>
+    		</list>
+    	</property>
+    	<property name="executionTracer" ref="executionTracer"/>
+    	<property name="ruleCaller" ref="ruleCaller"/>
+    </bean>
+    <bean id="acceptanceExecutor" class="cn.rongcapital.ruleengine.executor.JexlAcceptanceExecutor" parent="abstractExecutor"/>
+    <bean id="scoreExecutor" class="cn.rongcapital.ruleengine.executor.JexlScoreExecutor" parent="abstractExecutor"/>
+    <bean id="textExecutor" class="cn.rongcapital.ruleengine.executor.JexlTextExecutor" parent="abstractExecutor"/>
+
+    <!-- ruleSet executor -->
+    <bean id="localRuleSetExecutor" class="cn.rongcapital.ruleengine.core.LocalRuleSetExecutor"/>
+    
+    <!-- execution dispatcher -->
+    <bean id="localExecutionDispatcher" class="cn.rongcapital.ruleengine.core.LocalExecutionDispatcher"/>
+
+</beans>

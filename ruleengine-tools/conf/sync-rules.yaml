@@ -1,0 +1,14 @@
+
+apiBaseUrl: http://localhost:8080/v1/
+autoRemoveEnabled: false
+autoCreateEnabled: true
+contentEncoding: UTF-8
+contentFormatType: JSON
+bizTypesFileName: bizTypes
+datasourcesFileName: datasources
+rulesFileName: rules
+ruleSetsFileName: ruleSets
+ruleSetAssignmentsFileName: ruleSetAssignments
+datetimeFormat: yyyy-MM-dd HH:mm:ss
+datasPath: /Users/Kruce/PROJECTS/RONGCAPITAL/rule-engine/ruleengine-tools/src/test/resources/sync-test-datas
+

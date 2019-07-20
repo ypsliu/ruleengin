@@ -1,0 +1,388 @@
+<div class="am-cf am-padding am-padding-bottom-0">
+  <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg"><span class="am-icon-briefcase"></span> 业务类型管理</strong></div>
+</div>
+<hr/>
+<!-- toolbar -->
+<div class="am-g">
+	<div class="am-u-sm-12 am-u-md-6">
+		<div class="am-btn-toolbar">
+			<div class="am-btn-group am-btn-group-xs">
+				<button type="button" class="am-btn am-btn-primary" id="showCreateBiztypeBtn">
+					<span class="am-icon-plus"></span> 创建业务类型
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- main table -->
+<div class="am-g">
+	<div class="am-u-sm-12" id="biztypeBox">
+		
+	</div>
+</div>
+
+<!-- create dialog -->
+<div class="am-modal am-modal-confirm" tabindex="-1" id="create-biztype-dialog">
+	<div class="am-modal-dialog">
+		<div class="am-modal-hd">
+			创建业务类型
+			<a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+		</div>
+		<div class="am-modal-bd">
+			<form action="" class="am-form" data-validator-option="{focusCleanup:true}" id="create-biztype-form">
+			<fieldset>
+				<div class="am-form-group am-text-left">
+					<label for="code">业务类型code <small>*必填，不可重复</small></label>
+					<input id="code" type="text" class="am-input-sm" placeholder="业务类型code" data-rule="required">
+				</div>
+				<div class="am-form-group am-text-left">
+					<label for="code">业务类型名称 <small>*必填</small></label>
+					<input id="name" type="text" class="am-input-sm" placeholder="业务类型名称" data-rule="required">
+				</div>
+				<div class="am-form-group am-text-left">
+					<label for="code">说明</label>
+					<textarea id="comment" rows="3" placeholder="业务类型的说明信息"></textarea>
+				</div>
+			</fieldset>
+			</form>
+		</div>
+		<div class="am-modal-footer">
+			<span class="am-btn" id="createBiztypeBtn"><span class="am-icon-plus"></span> 确认创建</span>
+		</div>
+	</div>
+</div>
+
+<!-- edit dialog -->
+<div class="am-modal am-modal-confirm" tabindex="-1" id="edit-biztype-dialog">
+	<div class="am-modal-dialog">
+		<div class="am-modal-hd">
+			编辑业务类型
+			<a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+		</div>
+		<div class="am-modal-bd">
+			<form action="" class="am-form" data-validator-option="{focusCleanup:true}" id="edit-biztype-form">
+			<fieldset>
+				<div class="am-form-group am-text-left">
+					<label for="code">业务类型code</label>
+					<input id="code" type="text" class="am-input-sm" placeholder="业务类型code" data-rule="required" readonly>
+				</div>
+				<div class="am-form-group am-text-left">
+					<label for="name">业务类型名称 <small>*必填</small></label>
+					<input id="name" type="text" class="am-input-sm" placeholder="业务类型名称" data-rule="required">
+				</div>
+				<div class="am-form-group am-text-left">
+					<label for="comment">说明</label>
+					<textarea id="comment" rows="3" placeholder="业务类型的说明信息"></textarea>
+				</div>
+			</fieldset>
+			</form>
+		</div>
+		<div class="am-modal-footer">
+			<span class="am-btn" id="updateBiztypeBtn"><span class="am-icon-plus"></span> 确认保存</span>
+		</div>
+	</div>
+</div>
+
+<!-- assignment dialog -->
+<div class="am-modal am-modal-confirm" tabindex="-1" id="assign-biztype-dialog">
+	<div class="am-modal-dialog">
+		<div class="am-modal-hd">
+			为业务类型指派默认规则集合
+			<a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+		</div>
+		<div class="am-modal-bd">
+			<form action="" class="am-form" data-validator-option="{focusCleanup:true}" id="assign-biztype-form">
+			<fieldset>
+				<div class="am-form-group am-text-left">
+					<label for="code">业务类型code</label>
+					<input id="code" type="text" class="am-input-sm" placeholder="业务类型code" readonly>
+				</div>
+				<div class="am-form-group am-text-left">
+					<label for="name">业务类型名称</label>
+					<input id="name" type="text" class="am-input-sm" placeholder="业务类型名称" readonly>
+				</div>
+				<div class="am-form-group am-text-left">
+					<label for="ruleset_code">规则集合 <small>*必填</small></label>
+					<select id="ruleset_code" data-am-selected="{btnSize: 'sm'}" data-rule="required">
+					</select>
+				</div>
+				<div class="am-form-group am-text-left">
+					<label for="ruleset_version">规则集合版本 <small>*必填</small></label>
+					<select id="ruleset_version" data-am-selected="{btnSize: 'sm'}" data-rule="required">
+					</select>
+				</div>
+			</fieldset>
+			</form>
+		</div>
+		<div class="am-modal-footer">
+			<span class="am-modal-btn" data-am-modal-cancel>取消</span>
+			<span class="am-btn" id="assignBiztypeBtn">指派</span>
+		</div>
+	</div>
+</div>
+
+<!-- remove confirm dialog -->
+<div class="am-modal am-modal-confirm" tabindex="-1" id="remove-biztype-confirm-dialog">
+	<div class="am-modal-dialog">
+		<div class="am-modal-hd">确认删除</div>
+		<div class="am-modal-bd" id="remove-biztype-confirm-msg">确定要删除这条记录吗？</div>
+		<div class="am-modal-footer">
+			<span class="am-modal-btn" data-am-modal-cancel>取消</span>
+			<span class="am-modal-btn" data-am-modal-confirm>确定</span>
+		</div>
+	</div>
+</div>
+
+<!-- table template -->
+<script type="text/x-handlebars-template" id="biztypeTemplate">
+	<table class="am-table am-table-striped am-table-hover table-main">
+	<thead>
+		<tr>
+			<th>业务类型code</th>
+			<th class="table-title">业务类型名称</th>
+			<th class="table-title">规则集合 / 版本</th>
+			<th class="table-title">说明</th>
+			<th class="table-date">创建时间</th>
+			<th class="table-date">最后更新时间</th>
+			<th class="table-set">操作</th>
+		</tr>
+	</thead>
+	<tbody>
+	{{#each items}}
+		<tr>
+			<td>{{code}}</td>
+			<td>{{name}}</td>
+			<td>
+				{{#if ruleset_code}}
+				{{ruleset_code}} / {{ruleset_version}}
+				{{/if}}
+			</td>
+			<td>{{comment}}</td>
+			<td>{{creation_time}}</td>
+			<td>{{update_time}}</td>
+			<td>
+				<div class="am-btn-toolbar">
+					<div class="am-btn-group am-btn-group-xs">
+						<button class="am-btn am-btn-default am-btn-xs am-text-secondary editBiztypeBtn" 
+							 data-code="{{code}}"><span class="am-icon-pencil-square-o"></span> 编辑</button>
+						<button class="am-btn am-btn-default am-btn-xs am-text-primary assignRulesetBtn" 
+							 data-code="{{code}}"><span class="am-icon-pencil-square-o"></span> 指派规则集合</button>
+						<button class="am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only removeBiztypeBtn"
+							 data-code="{{code}}"><span class="am-icon-trash-o"></span> 删除</button>
+					</div>
+				</div>
+			</td>
+		</tr>
+	{{/each}}
+	</tbody>
+	</table>
+	<div class="am-cf">
+		共 {{items.length}} 条记录
+		<div class="am-fr">
+			<ul class="am-pagination">
+				<li class="am-disabled"><a href="#">«</a></li>
+				<li class="am-active"><a href="#">1</a></li>
+				<li class="am-disabled"><a href="#">»</a></li>
+			</ul>
+		</div>
+	</div>
+</script>
+
+<script type="text/javascript">
+
+var currentAssignedRulesetVersion;
+
+function getBiztypes() {
+	RestClient.get("/rule/bizType", showBiztypes);
+}
+
+function showBiztypes(biztypes) {
+	var template = Handlebars.compile($("#biztypeTemplate").text());
+	var datas = {
+		items: biztypes
+	};
+	var html = template(datas);
+	$("#biztypeBox").html(html);
+	processRemoveBiztypeBtns();
+	processEditBiztypeBtns();
+	processAssignBiztypeBtns();
+}
+
+function processRemoveBiztypeBtns() {
+	// remove biztype
+	$(".removeBiztypeBtn").click(function() {
+		var code = $(this).data("code");
+		$("#remove-biztype-confirm-msg").text("确定要删除编码为'" + code + "'的业务类型吗？'");
+		$("#remove-biztype-confirm-dialog").modal({
+			relatedTarget: this,
+			onConfirm: function(options) {
+				RestClient.del("/rule/bizType/" + code, getBiztypes);
+			}
+		});
+	});
+}
+
+function processEditBiztypeBtns() {
+	// edit biztype
+	$(".editBiztypeBtn").click(function() {
+		var code = $(this).data("code");
+		// get bizType info
+		RestClient.get("/rule/bizType/" + code, function(bizType) {
+			$("#edit-biztype-form #code").val(bizType.code);
+			$("#edit-biztype-form #name").val(bizType.name);
+			$("#edit-biztype-form #comment").val(bizType.comment);
+			var validator = $("#edit-biztype-form").data('validator');
+			if (validator) {
+				validator.cleanUp();
+			}
+			$("#updateBiztypeBtn").removeClass("am-disabled");
+			$("#edit-biztype-dialog").modal();
+		});
+	});
+}
+
+function processAssignBiztypeBtns() {
+	// assign ruleset
+	$(".assignRulesetBtn").click(function() {
+		var code = $(this).data("code");
+		RestClient.get("/rule/bizType/" + code, function(bizType) {
+			$("#assign-biztype-form #code").val(bizType.code);
+			$("#assign-biztype-form #name").val(bizType.name);
+			currentAssignedRulesetVersion = bizType.ruleset_version;
+			// get rulesets by bizType
+			RestClient.get("/rule/bizType/" + bizType.code + "/ruleset", function(rulesets) {
+				// show rulesets
+				$("#assign-biztype-form #ruleset_code").html("");
+				if (rulesets) {
+					$.each(rulesets, function(index, ruleset) {
+						if (ruleset.code == bizType.ruleset_code) {
+							// selected
+							$("#assign-biztype-form #ruleset_code").append("<option value='" 
+									+ ruleset.code + "," + ruleset.version + "' selected>" 
+									+ ruleset.code + " " + ruleset.name + "</option>");
+						} else {
+							$("#assign-biztype-form #ruleset_code").append("<option value='" 
+									+ ruleset.code + "," + ruleset.version + "'>" 
+									+ ruleset.code + " " + ruleset.name + "</option>");
+						}
+					});
+				}
+				// trigger the change to show versions
+				$("#assign-biztype-form #ruleset_code").change();
+				var validator = $("#assign-biztype-form").data('validator');
+				if (validator) {
+					validator.cleanUp();
+				}
+				$("#assignBiztypeBtn").removeClass("am-disabled");
+				// show dialog
+				$("#assign-biztype-dialog").modal();
+			});
+		});
+	});
+}
+
+$(document).ready(function() {
+	// get biztypes
+	getBiztypes();
+	
+	$("#showCreateBiztypeBtn").click(function() {
+		var validator = $("#create-biztype-form").data('validator');
+		if (validator) {
+			validator.cleanUp();
+		}
+		// enable create btn
+		$("#createBiztypeBtn").removeClass("am-disabled");
+		// show dialog
+		$("#create-biztype-dialog").modal();
+	});
+	
+	// create biztype
+	$("#createBiztypeBtn").click(function() {
+		// validate
+		$("#create-biztype-form").trigger("validate");
+		var validator = $("#create-biztype-form").data('validator');
+		if (validator.isFormValid()) {
+			// disable the btn
+			$("#createBiztypeBtn").addClass("am-disabled");
+			// create
+			var bizType = {
+				code: $("#create-biztype-form #code").val(),
+				name: $("#create-biztype-form #name").val(),
+				comment: $("#create-biztype-form #comment").val()
+			};
+			RestClient.post("/rule/bizType", bizType, function() {
+				$("#create-biztype-dialog").modal("close");
+				getBiztypes();
+			});
+		}
+	});
+	
+	// update biztype
+	$("#updateBiztypeBtn").click(function() {
+		// validate
+		$("#edit-biztype-form").trigger("validate");
+		var validator = $("#edit-biztype-form").data('validator');
+		if (validator.isFormValid()) {
+			// disable the btn
+			$("#updateBiztypeBtn").addClass("am-disabled");
+			var bizType = {
+				code: $("#edit-biztype-form #code").val(),
+				name: $("#edit-biztype-form #name").val(),
+				comment: $("#edit-biztype-form #comment").val()
+			};
+			RestClient.put("/rule/bizType/" + bizType.code, bizType, function() {
+				$("#edit-biztype-dialog").modal("close");
+				getBiztypes();
+			});
+		}
+	});
+	
+	$("#assignBiztypeBtn").click(function() {
+		// validate
+		$("#assign-biztype-form").trigger("validate");
+		var validator = $("#assign-biztype-form").data('validator');
+		if (validator.isFormValid()) {
+			// disable the btn
+			$("#assignBiztypeBtn").addClass("am-disabled");
+			// datas
+			var code = $("#assign-biztype-form #code").val();
+			var ruleSetCode = $("#assign-biztype-form #ruleset_code").val().split(",")[0];
+			var ruleSetVersion = $("#assign-biztype-form #ruleset_version").val();
+			// assign
+			RestClient.put("/rule/bizType/" + code + "/ruleSet/" + ruleSetCode + "/" + ruleSetVersion, 
+					null, function() {
+				$("#assign-biztype-dialog").modal("close");
+				getBiztypes();
+			});
+		}
+	});
+	
+	$("#assign-biztype-form #ruleset_code").change(function() {
+		var value = $(this).val();
+		if (!value) {
+			return;
+		}
+		var a = value.split(",");
+		var rulesetCode = a[0];
+		var rulesetVersion = a[1];
+		// get ruleset history
+		RestClient.get("/rule/ruleset/" + rulesetCode + "/history", function(histories) {
+			$("#assign-biztype-form #ruleset_version").html("");
+			$("#assign-biztype-form #ruleset_version").append("<option value='" + rulesetVersion + "'>" 
+					+ rulesetVersion + " (最新版本)</option>");
+			if (histories) {
+				$.each(histories, function(index, history) {
+					if (history.version == currentAssignedRulesetVersion) {
+						// selected
+						$("#assign-biztype-form #ruleset_version").append("<option value='" + history.version + "' selected>" 
+								+ history.version + "</option>");
+					} else {
+						$("#assign-biztype-form #ruleset_version").append("<option value='" + history.version + "'>" 
+								+ history.version + "</option>");
+					}
+				});
+			}
+		});
+	});
+});
+</script>

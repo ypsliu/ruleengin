@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+               http://www.springframework.org/schema/beans/spring-beans.xsd
+               http://www.springframework.org/schema/context
+               http://www.springframework.org/schema/context/spring-context.xsd
+               http://www.springframework.org/schema/tx
+               http://www.springframework.org/schema/tx/spring-tx.xsd
+               http://www.springframework.org/schema/aop
+               http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<!-- jackson provider -->
+	<bean class="com.ruixue.serviceplatform.commons.web.DefaultJacksonJaxbJsonProvider"/>
+	
+	<!-- ValidatorContextResolver -->
+	<bean class="org.jboss.resteasy.plugins.validation.ValidatorContextResolver"/>
+	
+	<!-- ValidationExceptionHandler -->
+	<bean class="cn.rongcapital.ruleengine.web.RopValidationExceptionHandler"/>
+
+	<!-- global exception mapper -->
+    <!-- response status code see: javax.ws.rs.core.Response.Status -->
+    <!-- <bean class="com.ruixue.serviceplatform.commons.web.GlobalExceptionMapper"> -->
+	<bean class="cn.rongcapital.ruleengine.web.RopGlobalExceptionMapper">
+		<property name="exceptionsMap">
+            <map>
+                <entry key="java.lang.IllegalArgumentException"
+                 	value="400:E400:输入参数错误"/>
+                 	
+                <entry key="com.ruixue.serviceplatform.commons.exception.InvalidParameterException"
+                 	value="400:E400:输入参数错误"/>
+                 	
+                <entry key="java.io.EOFException"
+                 	value="400:E400:输入参数错误"/>
+                
+                <entry key="javax.ws.rs.BadRequestException"
+                 	value="400:E400:输入参数错误"/>
+                 	
+                <entry key="cn.rongcapital.ruleengine.exception.InvalidParameterException"
+                 	value="400:E400:输入参数错误"/>
+                 	
+                <entry key="org.codehaus.jackson.map.JsonMappingException"
+                 	value="400:E400:输入参数错误"/>
+                 	
+                <entry key="org.codehaus.jackson.JsonParseException"
+                 	value="400:E400:输入参数错误"/>
+                 	
+                <entry key="javax.ws.rs.NotAuthorizedException"
+                 	value="401:E401:未经授权的访问"/>
+                 	
+                <entry key="javax.ws.rs.ForbiddenException"
+                 	value="403:E403:访问被禁止"/>
+                 	
+                <entry key="javax.ws.rs.NotFoundException"
+                 	value="404:E404:请求的资源不存在"/>
+                 	
+                <entry key="com.ruixue.serviceplatform.commons.exception.NotFoundException"
+                 	value="404:E404:请求的资源不存在"/>
+                 	
+                <entry key="cn.rongcapital.ruleengine.exception.NotFoundException"
+                 	value="404:E404:请求的资源不存在"/>
+                 	
+                <entry key="javax.ws.rs.NotAllowedException"
+                 	value="405:E405:不被允许的HTTP方法"/>
+                 	
+                <entry key="javax.ws.rs.NotAcceptableException"
+                 	value="406:E406:状态不合法"/>
+                
+                <entry key="cn.rongcapital.ruleengine.exception.DuplicateException"
+                 	value="406:E406:数据重复错误"/>
+                 	
+                <entry key="java.lang.IllegalStateException"
+                 	value="406:E406:状态不合法"/>
+                
+                <entry key="com.ruixue.serviceplatform.commons.exception.InvalidStateException"
+                 	value="406:E406:状态不合法"/>
+                 	
+                <entry key="cn.rongcapital.ruleengine.exception.StaleObjectStateException"
+                 	value="409:E409:提交的修改与其他会话冲突"/>
+                 	
+                <entry key="javax.ws.rs.NotSupportedException"
+                 	value="415:E415:媒体类型不被支持"/>
+            </map>
+        </property>
+        <property name="defaultStatusCode" value="500"/>
+        <property name="defaultErrorCode" value="E500"/>
+        <property name="defaultMessage" value="未知错误"/>
+	</bean>
+
+</beans>

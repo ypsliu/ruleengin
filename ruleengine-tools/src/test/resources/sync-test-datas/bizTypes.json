@@ -1,0 +1,11 @@
+{
+	"bizTypes":[
+		{
+			"code":"test-biz-type",
+			"name":"测试业务类型"
+		},{
+                        "code":"test-individualBasicInfo",
+                        "name":"风控测试"
+                }
+	]
+}

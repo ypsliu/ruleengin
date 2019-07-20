@@ -1,0 +1,23 @@
+datasources: [
+  {
+    code: datasource-1, 
+    comment: null, 
+    driverClass: com.mysql.jdbc.Driver, 
+    maxPoolSize: 5, 
+    name: 测试数据源1, 
+    password: null, 
+    url: 'jdbc:mysql://localhost:3306/ruleengine_test_1?useUnicode=true&characterEncoding=utf8',
+    user: root, 
+    validationSql: 'select 1'
+  }, {
+    code: datasource-2, 
+    comment: null, 
+    driverClass: com.mysql.jdbc.Driver, 
+    maxPoolSize: 5, 
+    name: 测试数据源2, 
+    password: null, 
+    url: 'jdbc:mysql://localhost:3306/ruleengine_test_2?useUnicode=true&characterEncoding=utf8',
+    user: root, 
+    validationSql: 'select 1'
+  }
+]

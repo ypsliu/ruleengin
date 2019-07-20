@@ -1,0 +1,13 @@
+{
+	"ruleSetAssignments":[
+		{
+			"biz_type_code":"test-biz-type",
+			"ruleset_code":"test-ruleSet-2",
+			"ruleset_version":1
+		},{
+                        "biz_type_code":"test-individualBasicInfo",
+                        "ruleset_code":"test-ruleSet-10",
+                        "ruleset_version":1
+                }
+	]
+}

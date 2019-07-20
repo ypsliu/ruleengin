@@ -1,0 +1,243 @@
+
+<section id="ruleStepsBox" data-am-widget="accordion" 
+	class="am-accordion am-accordion-gapped" data-am-accordion='{"multiple": true}'>
+	<dl class="am-accordion-item am-active" id="baseInfo">
+		<dt class="am-accordion-title">
+			<span class="am-icon-info"></span> 基本信息
+		</dt>
+		<dd class="am-accordion-bd am-collapse am-in">
+			<div class="am-accordion-content">
+				<div class="am-panel am-panel-default">
+					<div class="am-panel-bd">
+						<form action="" class="am-form" data-validator-option="{focusCleanup:true}" id="rule-editor-form">
+							<div class="am-g">
+								<div class="am-u-sm-6">
+									<div class="am-form-group am-text-left">
+										<label for="code">规则code <small>*必填，不可重复</small></label>
+										<input id="code" type="text" class="am-input-sm" placeholder="规则code" data-rule="required">
+									</div>
+									<div class="am-form-group am-text-left">
+										<label for="name">规则名称 <small>*必填</small></label>
+										<input id="name" type="text" class="am-input-sm" placeholder="规则名称" data-rule="required">
+									</div>
+									<div class="am-form-group am-text-left">
+										<label for="biz_type_code">业务类型 <small>*必填</small></label>
+										<select id="biz_type_code" data-am-selected="{btnSize: 'sm'}" data-rule="required">
+										</select>
+									</div>
+									<div class="am-form-group am-text-left">
+										<label for="match_type">匹配类型 <small>*必填</small></label>
+										<select id="match_type" data-am-selected="{btnSize: 'sm'}" data-rule="required">
+											<option value="ACCEPTANCE">是否接受</option>
+											<option value="SCORE">评分</option>
+										</select>
+									</div>
+									<div class="am-form-group am-text-left">
+										<label for="comment">说明</label>
+										<textarea id="comment" rows="3" placeholder="规则的说明信息"></textarea>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</dd>
+	</dl>
+	<dl class="am-accordion-item am-active" id="ruleDatas">
+		<dt class="am-accordion-title">
+			<span class="am-icon-database"></span> 数据准备
+		</dt>
+		<dd class="am-accordion-bd am-collapse am-in">
+			<div class="am-accordion-content">
+				<div class="am-panel am-panel-default">
+					<div class="am-panel-bd">
+						<div class="am-g">
+							<strong class="am-text-primary">
+								<span class="am-icon-filter"></span> 输入参数
+							</strong>
+						</div>
+						<div class="am-g">
+							<div class="am-u-sm-6">
+								<table class="am-table" id="paramsTable">
+								<thead>
+									<tr>
+										<th>参数名</th>
+										<th> </th>
+									</tr>
+								</thead>
+								<tbody>
+									
+								</tbody>
+								<tfoot>
+									<tr>
+										<th> </th>
+										<th>
+											<button type="button" class="am-btn am-btn-xs am-btn-success" id="addParamBtn">
+												<span class="am-icon-plus"></span>
+											</button>
+										</th>
+									</tr>
+								</tfoot>
+								</table>
+							</div>
+						</div>
+					</div>
+					<ul class="am-list am-list-static">
+						<li>
+							<div class="am-g">
+								<strong class="am-text-success">
+									<i class="am-icon-list am-icon-fw"></i> 内部变量
+								</strong>
+							</div>
+							<div class="am-g">
+								<div class="am-u-sm-6">
+									<table class="am-table" id="segmentsTable">
+									<thead>
+										<tr>
+											<th>变量名</th>
+											<th>变量值</th>
+											<th> </th>
+										</tr>
+									</thead>
+									<tbody>
+										
+									</tbody>
+									<tfoot>
+										<tr>
+											<th> </th>
+											<th> </th>
+											<th>
+												<button type="button" class="am-btn am-btn-xs am-btn-success" id="addSegmentBtn">
+													<span class="am-icon-plus"></span>
+												</button>
+											</th>
+										</tr>
+									</tfoot>
+									</table>
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="am-g">
+								<strong class="am-text-secondary">
+									<i class="am-icon-server am-icon-fw"></i> 动态参数
+								</strong>
+							</div>
+							<div class="am-g">
+								<div class="am-u-sm-6">
+									<table class="am-table" id="varsTable">
+									<thead>
+										<tr>
+											<th>变量名</th>
+											<th>获取方式</th>
+											<th>参数</th>
+											<th> </th>
+										</tr>
+									</thead>
+									<tbody>
+										
+									</tbody>
+									<tfoot>
+										<tr>
+											<th> </th>
+											<th> </th>
+											<th> </th>
+											<th>
+												<button type="button" class="am-btn am-btn-xs am-btn-success" id="addVarBtn">
+													<span class="am-icon-plus"></span>
+												</button>
+											</th>
+										</tr>
+									</tfoot>
+									</table>
+								</div>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</dd>
+	</dl>
+</section>
+
+<div class="am-g am-margin-left am-margin-top">
+	<button type="button" class="am-btn am-btn-lg am-btn-success" id="newRuleStepBtn">
+		<span class="am-icon-plus"></span> 添加步骤
+	</button>
+	<br/>
+	<br/>
+</div>
+
+<script type="text/javascript" src="rule/rule-editor.js"></script>
+<script type="text/javascript">
+
+var nextStepIndex = 1;
+var stepCount = 0;
+
+$(document).ready(function() {
+	
+	// initialize the accordion
+	$.AMUI.accordion.init();
+	
+	// #addParamBtn.click
+	$("#ruleStepsBox #ruleDatas #addParamBtn").click(function() {
+		addRuleParam();
+		rebindRemoveParamBtnClick();
+	});
+	// .removeParamBtn.click
+	rebindRemoveParamBtnClick();
+	
+	// #addSegmentBtn.click
+	$("#ruleStepsBox #ruleDatas #addSegmentBtn").click(function() {
+		addRuleSegment();
+		rebindRemoveSegmentBtnClick();
+	});
+	// .removeSegmentBtn.click
+	rebindRemoveSegmentBtnClick();
+	
+	// #addVarBtn.click
+	$("#ruleStepsBox #ruleDatas #addVarBtn").click(function() {
+		addRuleVar();
+		rebindRemoveVarBtnClick();
+	});
+	// .removeVarBtn.click
+	rebindRemoveVarBtnClick();
+	
+	// initialize the steps
+	initSteps();
+	
+	// #newRuleStepBtn.click
+	$("#newRuleStepBtn").click(function() {
+		$("#templateBox").html("");
+		$("#templateBox").load("rule/rule-step-template.html", function() {
+			var template = Handlebars.compile($("#templateBox").text());
+			var thisIndex = nextStepIndex++;
+			var html = template({
+				index: thisIndex
+			});
+			$("#ruleStepsBox").append($(html));
+			$("#templateBox").text("");
+			// increase the count
+			stepCount++;
+			// initialize the steps
+			initSteps();
+			// show step results
+			var matchType = $("#rule-editor-form #match_type").val();
+			changeStepResults(matchType, thisIndex);
+			// initialize the accordion
+			$.AMUI.accordion.init();
+		});
+	});
+	
+	// #match_type.change
+	$("#ruleStepsBox #rule-editor-form #match_type").change(function() {
+		var matchType = $(this).val();
+		if (stepCount > 0 && confirm("您已经添加了步骤，如果修改匹配类型这些步骤的结果信息将会丢失。\n确定要改变匹配类型吗？")) {
+			changeStepResults(matchType);
+		}
+	});
+	
+});
+
+</script>

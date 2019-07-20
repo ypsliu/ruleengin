@@ -1,0 +1,6 @@
+bizTypes: [
+  {
+    code: test-biz-type,
+    name: 测试业务类型
+  }
+]

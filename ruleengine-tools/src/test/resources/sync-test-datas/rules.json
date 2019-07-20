@@ -1,0 +1,202 @@
+{
+	"rules":[
+		{
+			"code":"acceptance-rule",
+			"name":"是否通过规则",
+			"biz_type_code":"test-biz-type",
+			"params":["CERTIFICATE_NUMBER"],
+			"expression":"var age = _plugins.IdCardNumberAgeGetter.exec(CERTIFICATE_NUMBER); if (age >= ${minAge} and age < ${maxAge}) { tracer.trace('年龄在合法范围之内'); return 'ACCEPT'; } else { tracer.trace('年龄不合法'); return 'REJECT'; }",
+			"match_type":"ACCEPTANCE",
+			"datasources":[
+				{"code":"datasource-1"},
+				{"code":"datasource-2"}
+			],
+			"extract_sqls":[
+				{
+					"datasource_code":"datasource-1",
+					"params":["bizCode"],
+					"sql":"select userId from req_table where bizCode = ?",
+					"table_name":"ORDER_INFO",
+					"columns":["USER_ID"],
+					"conditions":{
+						"ORDER_ID":"bizCode"
+					}
+				},
+				{
+					"datasource_code":"datasource-2",
+					"params":["userId"],
+					"sql":"select userId, age from user_table where userId = ?",
+					"table_name":"USER_INFO",
+					"columns":["CERTIFICATE_NUMBER"],
+					"conditions":{
+						"USER_ID":"USER_ID"
+					}
+				}
+			],
+			"expression_segments": {
+				"minAge":"18",
+				"maxAge":"65"
+			}
+		},
+		{
+			"code":"score-rule",
+			"name":"评分规则",
+			"biz_type_code":"test-biz-type",
+			"params":["CERTIFICATE_NUMBER"],
+			"expression":"var age = _plugins.IdCardNumberAgeGetter.exec(CERTIFICATE_NUMBER); if (rules.call('acceptance-rule', 1) != 'ACCEPT') { tracer.trace('年龄不合法'); return 0; }; if (age < ${age-1}) { tracer.trace('年龄小于${age-1}'); return 1; } else if (age < ${age-2}) { tracer.trace('年龄小于${age-2}'); return 2; } else if (age < ${age-3}) { tracer.trace('年龄小于${age-3}'); return 3; } else { tracer.trace('年龄在其他范围内'); return 1; }",
+			"match_type":"SCORE",
+			"datasources":[
+				{"code":"datasource-1"},
+				{"code":"datasource-2"}
+			],
+			"extract_sqls":[
+				{
+					"datasource_code":"datasource-1",
+					"params":["bizCode"],
+					"sql":"select userId from req_table where bizCode = ?",
+					"table_name":"ORDER_INFO",
+					"columns":["USER_ID"],
+					"conditions":{
+						"ORDER_ID":"bizCode"
+					}
+				},
+				{
+					"datasource_code":"datasource-2",
+					"params":["userId"],
+					"sql":"select userId, age from user_table where userId = ?",
+					"table_name":"USER_INFO",
+					"columns":["CERTIFICATE_NUMBER"],
+					"conditions":{
+						"USER_ID":"USER_ID"
+					}
+				}
+			],
+			"expression_segments": {
+				"age-1":"23",
+				"age-2":"30",
+				"age-3":"50"
+			}
+		},
+		{
+  "code": "accept-ageRangeCheck",
+  "name": "年龄阶段检查",
+  "biz_type_code": "test-individualBasicInfo",
+  "params": [
+    "CERTIFICATE_NUMBER",
+    "APPLY_TYPE"
+  ],
+  "expression": "var age = _plugins.IdCardNumberAgeGetter.exec(CERTIFICATE_NUMBER); if (APPLY_TYPE == 'loan') {   if (age >= ${loanMinAge}     and age <= ${loanMaxAge}) {     tracer.trace('借款人年龄在${loanMinAge}~${loanMaxAge}范围内');     return 'ACCEPT';   } else {     tracer.trace('贷款人年龄不在${loanMinAge}~${loanMaxAge}范围内');     return 'REJECT';   } } else if (APPLY_TYPE == 'it') {   if (age >= ${itMinAge}     and age <= ${itMaxAge}) {     tracer.trace('IT类申请人年龄在${itMinAge}~${itMaxAge}范围内');     return 'ACCEPT';   } else {     tracer.trace('IT类申请人年龄不在${itMinAge}~${itMaxAge}范围内');     return 'REJECT';   } } else {   if (age >= ${languageMinAge}     and age <= ${languageMaxAge}) {     tracer.trace('语言类申请人年龄在${languageMinAge}~${languageMaxAge}范围内');     return 'ACCEPT';   } else {     tracer.trace('语言类申请人年龄不在${languageMinAge}~${languageMaxAge}范围内');     return 'REJECT'   } }",
+  "match_type": "ACCEPTANCE",
+  "expression_segments": {
+    "loanMinAge": "18",
+    "loanMaxAge": "65",
+    "itMinAge": "18",
+    "itMaxAge": "35",
+    "languageMinAge": "18",
+    "languageMaxAge": "45"
+  }
+},
+{
+  "code": "accept-iDCheck",
+  "name": "身份证合法性校验",
+  "biz_type_code": "test-individualBasicInfo",
+  "params": [
+    "CERTIFICATE_NUMBER"
+  ],
+  "expression": "if ( _plugins.IdCardNumberValidator.exec(CERTIFICATE_NUMBER)) {tracer.trace('身份证信息合法'); return 'ACCEPT';} else{  tracer.trace('身份证信息不合法'); return 'REJECT';}",
+  "match_type": "ACCEPTANCE"
+},
+{
+  "code": "accept-ContactsCheck",
+  "name": "通讯录是否抓取",
+  "biz_type_code": "test-individualBasicInfo",
+  "params": [
+    "ISCONTACTSGRABED"
+  ],
+  "expression": " tracer.trace('通讯录已经抓取'); return 'ACCEPT' ",
+  "match_type": "ACCEPTANCE"
+},
+{
+  "code": "accept-ContactsAvailableCheck",
+  "name": "通讯录是否有效",
+  "biz_type_code": "test-individualBasicInfo",
+  "params": [
+    "CONTACT",
+    "VALIDCONTACTS"
+  ],
+  "expression": "if (CONTACT =~_plugins.StringToSet.exec(VALIDCONTACTS)) {tracer.trace('通讯录有效'); return 'ACCEPT';} else{ tracer.trace('通讯录无效'); return 'REJECT'}",
+  "match_type": "ACCEPTANCE"
+},
+{
+  "code": "accept-ContactsMatchedCheck",
+  "name": "通讯录是否匹配",
+  "biz_type_code": "test-individualBasicInfo",
+  "params": [
+    "CONTACT",
+    "VALIDCONTACTS"
+  ],
+  "expression": "if (CONTACT =~_plugins.StringToSet.exec(VALIDCONTACTS)){ tracer.trace('通讯录匹配'); return 'ACCEPT'} else {tracer.trace('通讯录不匹配'); return 'REJECT'}",
+  "match_type": "ACCEPTANCE"
+},
+{
+  "code": "accept-IsFreeOfPhoneCheck",
+  "name": "是否可免电核",
+  "biz_type_code": "test-individualBasicInfo",
+  "params": [
+    "INST",
+    "NAME",
+    "CERTIFICATE_NUMBER",
+    "CELLPHONE",
+    "BANK_ACCOUNT",
+    "NAME_REF",
+    "CERTIFICATE_NUMBER_REF",
+    "CELLPHONE_REF",
+    "BANK_ACCOUNT_REF",
+    "CONTACTS",
+    "FIRST_CONTACT",
+    "FIRST_CELLPHONE",
+    "FIRST_CONTACT_REF",
+    "FIRST_CELLPHONE_REF"
+  ],
+  "expression": "var result='ACCEPT';if (INST =~_plugins.StringToSet.exec('${inst_ref}')) {  tracer.trace('免电核机构审核通过');} else{  tracer.trace('免电核机构审核拒绝');  result='REJECT';} if (NAME == NAME_REF) {  tracer.trace('申请人身体四要素-姓名审核通过');} else {  tracer.trace('申请人身体四要素-姓名审核拒绝');  result='REJECT';} if (CERTIFICATE_NUMBER == CERTIFICATE_NUMBER_REF) {  tracer.trace('申请人身体四要素-身份证审核通过');} else  {  tracer.trace('申请人身体四要素-身份证审核拒绝');  result='REJECT';} if (CELLPHONE == CELLPHONE_REF) {  tracer.trace('申请人身体四要素-手机审核通过');} else{  tracer.trace('申请人身体四要素-手机审核拒绝');  result='REJECT';} if (BANK_ACCOUNT == BANK_ACCOUNT_REF) {  tracer.trace('申请人身体四要素-借记卡审核通过');} else{  tracer.trace('申请人身体四要素-借记卡审核拒绝');  result='REJECT';} if (rules.call('accept-ContactsCheck', 1) == 'ACCEPT') {  tracer.trace('通讯录已经抓取');} else{  tracer.trace('通讯录没有抓取');  result='REJECT';}var flag = _plugins.CheckContacts.exec(CONTACTS, ${contactsNum}, '${blackKeys}');if ( flag == 'ACCEPT') {  tracer.trace('申请人通讯录有效条数大于20条审核通过,且不包含敏感关键字');} else if(flag == 'CAREFUL'){  tracer.trace('申请人通讯录有效条数大于20条审核通过,包含敏感关键字小于3个，转电核');  result='REJECT';} else {  tracer.trace('申请人通讯录有效条数大于20条审核拒绝,包含敏感关键字大于3个');  result='REJECT';} if (FIRST_CONTACT == FIRST_CONTACT) {  tracer.trace('申请人第一联系人-姓名审核通过');} else {  tracer.trace('申请人第一联系人-姓名审核拒绝');  result='REJECT';}if (FIRST_CELLPHONE == FIRST_CELLPHONE_REF) {  tracer.trace('申请人第一联系人-电话审核通过');} else{  tracer.trace('申请人第一联系人-电话审核拒绝');  result='REJECT';}  return result;",
+  "match_type": "ACCEPTANCE",
+  "expression_segments": {
+  	"inst_ref": "10065|10036|10857|10076|10052",
+  	"blackKeys":"融资|贷款|小额|抵押|担保|信用|借钱|套现|宜信|捷越|恒昌|捷信|诺远|信而富|小牛",
+  	"contactsNum":"20"
+  }
+},
+{
+  "code": "accept-ClassValidCheck",
+  "name": "课程真实性确认",
+  "biz_type_code": "test-individualBasicInfo",
+  "params": [
+    "PIC"
+  ],
+  "expression": " tracer.trace('课程真实有效'); return 'ACCEPT'; ",
+  "match_type": "ACCEPTANCE"
+},{
+  "code": "accept-SummaryCheck",
+  "name": "申请规则综合判断",
+  "biz_type_code": "test-individualBasicInfo",
+  "params": [
+    "INST",
+    "NAME",
+    "CERTIFICATE_NUMBER",
+    "CELLPHONE",
+    "BANK_ACCOUNT",
+    "NAME_REF",
+    "CERTIFICATE_NUMBER_REF",
+    "CELLPHONE_REF",
+    "BANK_ACCOUNT_REF",
+    "CONTACTS",
+    "FIRST_CONTACT",
+    "FIRST_CELLPHONE",
+    "FIRST_CONTACT_REF",
+    "FIRST_CELLPHONE_REF"
+  ],
+  "expression": "if (rules.call('accept-iDCheck', 1) == 'ACCEPT' && rules.call('accept-ageRangeCheck', 1) == 'ACCEPT') {tracer.trace('身份证合法性校验&&年龄阶段检查 通过');if (rules.call('accept-IsFreeOfPhoneCheck', 1) == 'ACCEPT') {tracer.trace('通过免电核，直接通过');return 'ACCEPT';} else {if (rules.call('accept-ContactsCheck', 1) == 'ACCEPT' && rules.call('accept-ContactsAvailableCheck', 1) == 'ACCEPT' && rules.call('accept-ContactsMatchedCheck', 1) == 'ACCEPT' && rules.call('accept-ClassValidCheck', 1) == 'ACCEPT') {tracer.trace('课程真实性确认&&通讯录是否匹配&&通讯录是否有效&&通讯录是否抓取检查 通过');return 'ACCEPT';} else {tracer.trace('课程真实性确认&&通讯录是否匹配&&通讯录是否有效&&通讯录是否抓取检查 拒绝');return 'REJECT';}}} else {tracer.trace('身份证合法性校验&&年龄阶段检查 拒绝');return 'REJECT';}",
+  "match_type": "ACCEPTANCE"
+}
+	]
+}

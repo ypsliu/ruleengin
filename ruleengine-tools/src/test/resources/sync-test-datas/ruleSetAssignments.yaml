@@ -1,0 +1,7 @@
+ruleSetAssignments: [
+  {
+    bizTypeCode: test-biz-type,
+    ruleSetCode: test-ruleSet-2,
+    ruleSetVersion: 1
+  }
+]

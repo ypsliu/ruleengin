@@ -1,0 +1,22 @@
+{
+	"datasources":[
+		{
+			"code":"datasource-1",
+			"name":"测试数据源1",
+			"driver_class":"com.mysql.jdbc.Driver",
+			"url":"jdbc:mysql://localhost:3306/ruleengine_test_1?useUnicode=true&characterEncoding=utf8",
+			"user":"root",
+			"max_pool_size":5,
+			"validation_sql":"select 1"
+		},
+		{
+			"code":"datasource-2",
+			"name":"测试数据源2",
+			"driver_class":"com.mysql.jdbc.Driver",
+			"url":"jdbc:mysql://localhost:3306/ruleengine_test_2?useUnicode=true&characterEncoding=utf8",
+			"user":"root",
+			"max_pool_size":5,
+			"validation_sql":"select 1"
+		}
+	]
+}

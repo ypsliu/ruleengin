@@ -1,0 +1,79 @@
+rules: [
+  {
+    bizTypeCode: test-biz-type,
+    code: acceptance-rule,
+    comment: null,
+    datasources: [
+      {code: datasource-1},
+      {code: datasource-2}
+    ],
+    executorClass: null,
+    expression: 'var age = _plugins.IdCardNumberAgeGetter.exec(CERTIFICATE_NUMBER); if (age >= ${minAge} and age < ${maxAge}) { tracer.trace("年龄在合法范围之内"); return "ACCEPT"; } else { tracer.trace("年龄不合法"); return "REJECT"; }',
+    extractSqls: [
+      {
+        datasourceCode: datasource-1,
+        params: [bizCode],
+        sql: 'select userId from req_table where bizCode = ?',
+        tableName: ORDER_INFO,
+        columns: [USER_ID],
+        conditions: {
+          ORDER_ID: bizCode
+        }
+      }, {
+        datasourceCode: datasource-2,
+        params: [userId],
+        sql: 'select userId, age from user_table where userId = ?',
+        tableName: USER_INFO,
+        columns: [CERTIFICATE_NUMBER],
+        conditions: {
+          USER_ID: USER_ID
+        }
+      }
+    ],
+    expressionSegments: {
+      minAge: 18,
+      maxAge: 65
+    },
+    matchType: ACCEPTANCE,
+    name: 是否通过规则,
+    params: [CERTIFICATE_NUMBER]
+  }, {
+    bizTypeCode: test-biz-type,
+    code: score-rule,
+    comment: null,
+    datasources: [
+      {code: datasource-1},
+      {code: datasource-2}
+    ],
+    expression: 'var age = _plugins.IdCardNumberAgeGetter.exec(CERTIFICATE_NUMBER); if (rules.call("acceptance-rule", 1) != "ACCEPT") { tracer.trace("年龄不合法"); return 0; }; if (age < ${age-1}) { tracer.trace("年龄小于${age-1}"); return 1; } else if (age < ${age-2}) { tracer.trace("年龄小于${age-2}"); return 2; } else if (age < ${age-3}) { tracer.trace("年龄小于${age-3}"); return 3; } else { tracer.trace("年龄在其他范围内"); return 1; }',
+    extractSqls: [
+      {
+        datasourceCode: datasource-1,
+        params: [bizCode],
+        sql: 'select userId from req_table where bizCode = ?',
+        tableName: ORDER_INFO,
+        columns: [USER_ID],
+        conditions: {
+          ORDER_ID: bizCode
+        }
+      }, {
+        datasourceCode: datasource-2,
+        params: [userId],
+        sql: 'select userId, age from user_table where userId = ?',
+        tableName: USER_INFO,
+        columns: [CERTIFICATE_NUMBER],
+        conditions: {
+          USER_ID: USER_ID
+        }
+      }
+    ],
+    expressionSegments: {
+      age-1: 23,
+      age-2: 30,
+      age-3: 50
+    },
+    matchType: SCORE,
+    name: 评分规则,
+    params: [CERTIFICATE_NUMBER]
+  }
+]

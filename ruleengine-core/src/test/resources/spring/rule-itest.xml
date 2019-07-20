@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx" 
+    xmlns:cache="http://www.springframework.org/schema/cache" 
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+               http://www.springframework.org/schema/beans/spring-beans.xsd
+               http://www.springframework.org/schema/context
+               http://www.springframework.org/schema/context/spring-context.xsd
+               http://www.springframework.org/schema/tx
+               http://www.springframework.org/schema/tx/spring-tx.xsd
+               http://www.springframework.org/schema/aop
+               http://www.springframework.org/schema/aop/spring-aop.xsd
+               http://www.springframework.org/schema/cache
+               http://www.springframework.org/schema/cache/spring-cache.xsd
+               ">
+
+	<context:property-placeholder location="file:${APP_HOME}/conf/ruleengine-core.properties"/>
+    
+	<!-- DataSource -->
+    <bean id="abstractDataSource" abstract="true" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="initialSize" value="1"/>
+        <property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<property name="testWhileIdle" value="true" />
+		<property name="removeAbandoned" value="false" />
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<property name="minEvictableIdleTimeMillis" value="25200000" />
+		<property name="filters" value="mergeStat" />
+		<property name="validationQuery" value="${db.main.validationSql}" />
+    </bean>
+    
+    <!-- main -->
+    <bean id="mainDataSource" parent="abstractDataSource">
+	    <property name="username" value="${db.main.user}"/>
+		<property name="password" value="${db.main.password}"/>
+		<property name="maxActive" value="${db.main.maxPoolSize}"/>
+		<property name="url" value="${db.main.jdbcUrl}" />
+	</bean>
+	
+    <!-- SessionFactory -->
+    <bean id="abstractSessionFactory" abstract="true" class="org.mybatis.spring.SqlSessionFactoryBean"/>
+    
+    <!-- main -->
+    <bean id="mainSessionFactory" parent="abstractSessionFactory">
+		<property name="dataSource" ref="mainDataSource" />
+	</bean>
+	
+	<!-- TransactionManager -->
+	<bean id="abstractTransactionManager" abstract="true" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"/>
+	
+	<!-- main -->
+	<bean id="mainTransactionManager" parent="abstractTransactionManager">
+		<property name="dataSource" ref="mainDataSource" />
+	</bean>
+	
+	<!-- Transaction -->
+	<tx:annotation-driven transaction-manager="mainTransactionManager" order="1100"/>
+	
+	<!-- cache -->
+	<cache:annotation-driven order="1000" key-generator="cacheKeyGenerator" cache-manager="cacheManager" />
+	
+	<!-- cache key generator -->
+	<bean id="cacheKeyGenerator" class="com.ruixue.serviceplatform.commons.cache.CacheKeyGenerator"/>
+	
+	<!-- cache manager -->
+	<bean id="cacheManager" class="org.springframework.cache.concurrent.ConcurrentMapCacheManager">
+		<property name="cacheNames">
+			<set>
+				<value>datasources</value>
+				<value>bizTypes</value>
+				<value>rules</value>
+				<value>ruleSets</value>
+			</set>
+		</property>
+	</bean>
+	
+	<!-- date time provider -->
+	<bean id="localDatetimeProvider" class="cn.rongcapital.ruleengine.utils.LocalDatetimeProvider"/>
+	
+	<!-- dao -->
+	<bean id="datasourceManagerDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="cn.rongcapital.ruleengine.core.DatasourceManagerDao" />
+		<property name="sqlSessionFactory" ref="mainSessionFactory" />
+	</bean>
+	<bean id="bizTypeDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="cn.rongcapital.ruleengine.core.BizTypeDao" />
+		<property name="sqlSessionFactory" ref="mainSessionFactory" />
+	</bean>
+	<bean id="ruleDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="cn.rongcapital.ruleengine.core.RuleDao" />
+		<property name="sqlSessionFactory" ref="mainSessionFactory" />
+	</bean>
+	<bean id="testingDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
+		<property name="mapperInterface" value="cn.rongcapital.ruleengine.core.itest.TestingDao" />
+		<property name="sqlSessionFactory" ref="mainSessionFactory" />
+	</bean>
+    
+    <!-- service -->
+    <bean id="datasourceManager" class="cn.rongcapital.ruleengine.core.DatasourceManagerImpl" />
+    <bean id="bizTypeService" class="cn.rongcapital.ruleengine.core.BizTypeServiceImpl" />
+    <bean id="ruleService" class="cn.rongcapital.ruleengine.core.RuleServiceImpl" />
+    <bean id="testingService" class="cn.rongcapital.ruleengine.core.itest.TestingService" />
+
+</beans>

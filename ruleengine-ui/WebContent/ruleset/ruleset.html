@@ -1,0 +1,474 @@
+<div class="am-cf am-padding am-padding-bottom-0">
+  <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg"><span class="am-icon-tasks"></span> 规则集合管理</strong></div>
+</div>
+<hr/>
+<!-- toolbar -->
+<div class="am-g">
+	<div class="am-u-sm-12 am-u-md-6">
+		<div class="am-btn-toolbar">
+			<div class="am-btn-group am-btn-group-xs">
+				<button type="button" class="am-btn am-btn-primary" id="showCreateRulesetBtn">
+					<span class="am-icon-plus"></span> 创建规则集合
+				</button>
+			</div>
+		</div>
+	</div>
+	<div class="am-u-sm-12 am-u-md-3">
+		<div class="am-form-group">
+			<form action="" class="am-form" id="filter-ruleset-form">
+				<select id="biz_type_code" data-am-selected="{btnSize: 'sm'}">
+					<option value="_ALL_">所有业务类型</option>
+				</select>
+			</form>
+		</div>
+	</div>
+</div>
+<!-- main table -->
+<div class="am-g">
+	<div class="am-u-sm-12" id="rulesetBox">
+		
+	</div>
+</div>
+
+<!-- create dialog -->
+<div class="am-modal am-modal-confirm" tabindex="-1" id="create-ruleset-dialog">
+	<div class="am-modal-dialog">
+		<div class="am-modal-hd">
+			创建规则集合
+			<a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+		</div>
+		<div class="am-modal-bd">
+			<form action="" class="am-form" data-validator-option="{focusCleanup:true}" id="create-ruleset-form">
+			<fieldset>
+				<div class="am-tabs am-margin" data-am-tabs>
+					<ul class="am-tabs-nav am-nav am-nav-tabs">
+						<li class="am-active"><a href="#ruleTab1">基本信息</a></li>
+						<li><a href="#ruleTab2">所属规则</a></li>
+					</ul>
+					<div class="am-tabs-bd">
+						<div class="am-tab-panel am-fade am-in am-active" id="ruleTab1">
+							<div class="am-form-group am-text-left">
+								<label for="code">规则集合code <small>*必填，不可重复</small></label>
+								<input id="code" type="text" class="am-input-sm" placeholder="规则集合code" data-rule="required">
+							</div>
+							<div class="am-form-group am-text-left">
+								<label for="name">规则集合名称 <small>*必填</small></label>
+								<input id="name" type="text" class="am-input-sm" placeholder="规则集合名称" data-rule="required">
+							</div>
+							<div class="am-form-group am-text-left">
+								<label for="biz_type_code">业务类型 <small>*必填</small></label>
+								<select id="biz_type_code" data-am-selected="{btnSize: 'sm'}" data-rule="required">
+								</select>
+							</div>
+							<div class="am-form-group am-text-left">
+								<label for="ordered">规则匹配顺序<small>*必填</small></label>
+								<select id="ordered" data-am-selected="{btnSize: 'sm'}" data-rule="required">
+											<option value="true">按顺序匹配</option>
+											<option value="false" selected>顺序无关</option>
+										</select>
+							</div>
+							<div class="am-form-group am-text-left">
+								<label for="comment">说明</label>
+								<textarea id="comment" rows="3" placeholder="规则集合的说明信息"></textarea>
+							</div>
+						</div>
+						<div class="am-tab-panel am-fade" id="ruleTab2">
+							<div class="am-form-group am-text-left" id="rulesSelectBox">
+								
+							</div>
+						</div>
+					</div>
+				</div>
+			</fieldset>
+			</form>
+		</div>
+		<div class="am-modal-footer">
+			<span class="am-modal-btn" data-am-modal-cancel>取消</span>
+			<span class="am-btn" id="createRulesetBtn">创建</span>
+		</div>
+	</div>
+</div>
+
+<!-- edit dialog -->
+<div class="am-modal am-modal-confirm" tabindex="-1" id="edit-ruleset-dialog">
+	<div class="am-modal-dialog">
+		<div class="am-modal-hd">
+			编辑规则集合
+			<a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+		</div>
+		<div class="am-modal-bd">
+			<form action="" class="am-form" data-validator-option="{focusCleanup:true}" id="edit-ruleset-form">
+			<fieldset>
+				<div class="am-tabs am-margin" data-am-tabs>
+					<ul class="am-tabs-nav am-nav am-nav-tabs">
+						<li class="am-active"><a href="#ruleTab1">基本信息</a></li>
+						<li><a href="#ruleTab2">所属规则</a></li>
+					</ul>
+					<div class="am-tabs-bd">
+						<div class="am-tab-panel am-fade am-in am-active" id="ruleTab1">
+							<div class="am-form-group am-text-left">
+								<label for="code">规则集合code</label>
+								<input id="code" type="text" class="am-input-sm" placeholder="规则集合code" readonly>
+							</div>
+							<div class="am-form-group am-text-left">
+								<label for="name">规则集合名称 <small>*必填</small></label>
+								<input id="name" type="text" class="am-input-sm" placeholder="规则集合名称" data-rule="required">
+							</div>
+							<div class="am-form-group am-text-left">
+								<label for="biz_type_code">业务类型 <small>*必填</small></label>
+								<select id="biz_type_code" data-am-selected="{btnSize: 'sm'}" data-rule="required">
+								</select>
+							</div>
+							<div class="am-form-group am-text-left">
+								<label for="ordered">规则匹配顺序<small>*必填</small></label>
+								<select id="ordered" data-am-selected="{btnSize: 'sm'}" data-rule="required">
+											<option value="true">按顺序匹配</option>
+											<option value="false" selected>顺序无关</option>
+										</select>
+							</div>
+							<div class="am-form-group am-text-left">
+								<label for="comment">说明</label>
+								<textarea id="comment" rows="3" placeholder="规则集合的说明信息"></textarea>
+							</div>
+						</div>
+						<div class="am-tab-panel am-fade" id="ruleTab2">
+							<div class="am-form-group am-text-left" id="rulesSelectBox">
+								
+							</div>
+						</div>
+					</div>
+				</div>
+			</fieldset>
+			</form>
+		</div>
+		<div class="am-modal-footer">
+			<span class="am-modal-btn" data-am-modal-cancel>取消</span>
+			<span class="am-btn" id="updateRulesetBtn">保存</span>
+		</div>
+	</div>
+</div>
+
+<!-- remove confirm dialog -->
+<div class="am-modal am-modal-confirm" tabindex="-1" id="remove-ruleset-confirm-dialog">
+	<div class="am-modal-dialog">
+		<div class="am-modal-hd">确认删除</div>
+		<div class="am-modal-bd" id="remove-ruleset-confirm-msg">确定要删除这条记录吗？</div>
+		<div class="am-modal-footer">
+			<span class="am-modal-btn" data-am-modal-cancel>取消</span>
+			<span class="am-modal-btn" data-am-modal-confirm>确定</span>
+		</div>
+	</div>
+</div>
+
+<!-- table template -->
+<script type="text/x-handlebars-template" id="rulesetTemplate">
+	<table class="am-table am-table-striped am-table-hover table-main">
+	<thead>
+		<tr>
+			<th>规则集合code</th>
+			<th class="table-title">规则集合名称</th>
+			<th class="table-title">业务类型</th>
+			<th class="table-title">按顺序匹配</th>
+			<th class="table-title">版本号</th>
+			<th class="table-title">所属规则</th>
+			<th class="table-title">说明</th>
+			<th class="table-date">创建时间</th>
+			<th class="table-date">最后更新时间</th>
+			<th class="table-set">操作</th>
+		</tr>
+	</thead>
+	<tbody>
+	{{#each items}}
+		<tr>
+			<td>{{code}}</td>
+			<td>{{name}}</td>
+			<td>{{biz_type_code}}</td>
+			<td>{{ordered}}</td>
+			<td>{{version}}</td>
+			<td>
+				{{#if rules}}
+					{{#each rules}}
+						{{code}} / {{version}}<br/>
+					{{/each}}
+				{{/if}}
+			</td>
+			<td>{{comment}}</td>
+			<td>{{creation_time}}</td>
+			<td>{{update_time}}</td>
+			<td>
+				<div class="am-btn-toolbar">
+					<div class="am-btn-group am-btn-group-xs">
+						<button class="am-btn am-btn-default am-btn-xs am-text-secondary editRulesetBtn" 
+							 data-code="{{code}}"><span class="am-icon-pencil-square-o"></span> 编辑</button>
+						<button class="am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only removeRulesetBtn"
+							 data-code="{{code}}"><span class="am-icon-trash-o"></span> 删除</button>
+					</div>
+				</div>
+			</td>
+		</tr>
+	{{/each}}
+	</tbody>
+	</table>
+	<div class="am-cf">
+		共 {{items.length}} 条记录
+		<div class="am-fr">
+			<ul class="am-pagination">
+				<li class="am-disabled"><a href="#">«</a></li>
+				<li class="am-active"><a href="#">1</a></li>
+				<li class="am-disabled"><a href="#">»</a></li>
+			</ul>
+		</div>
+	</div>
+</script>
+
+<script type="text/javascript">
+
+var currentBizTypeCode = "_ALL_";
+
+var currentRules;
+
+var currentRulsetCode;
+
+function getRulesets() {
+	var url = "/rule/ruleset";
+	if (currentBizTypeCode != "_ALL_") {
+		url = "/rule/bizType/" + currentBizTypeCode + "/ruleset";
+	}
+	RestClient.get(url, showRulesets);
+}
+
+function showRulesets(rulesets) {
+	var template = Handlebars.compile($("#rulesetTemplate").text());
+	var datas = {
+		items: rulesets
+	};
+	var html = template(datas);
+	$("#rulesetBox").html(html);
+	processRemoveRulesetBtns();
+	processEditRulesetBtns();
+}
+
+function processRemoveRulesetBtns() {
+	// remove ruleset
+	$(".removeRulesetBtn").click(function() {
+		var code = $(this).data("code");
+		$("#remove-ruleset-confirm-msg").text("确定要删除编码为'" + code + "'的规则集合吗？'");
+		$("#remove-ruleset-confirm-dialog").modal({
+			relatedTarget: this,
+			onConfirm: function(options) {
+				RestClient.del("/rule/ruleset/" + code, getRulesets);
+			}
+		});
+	});
+}
+
+function processEditRulesetBtns() {
+	// edit ruleset
+	$(".editRulesetBtn").click(function() {
+		var code = $(this).data("code");
+		fetchBiztypes(function(bizTypes) {
+			RestClient.get("/rule/ruleset/" + code, function(ruleset) {
+				currentRulsetCode = ruleset.code;
+				$("#edit-ruleset-form #code").val(ruleset.code);
+				$("#edit-ruleset-form #name").val(ruleset.name);
+				$("#edit-ruleset-form #ordered").val("" + ruleset.ordered);
+				$("#edit-ruleset-form #comment").val(ruleset.comment);
+				$("#edit-ruleset-form #biz_type_code").val(ruleset.biz_type_code);
+				// trigger the bizType select to show rules
+				$("#edit-ruleset-form #biz_type_code").change();
+				// set the current rules
+				if (ruleset.rules) {
+					currentRules = ruleset.rules;
+				}
+				var validator = $("#edit-ruleset-form").data('validator');
+				if (validator) {
+					validator.cleanUp();
+				}
+				$("#updateRulesetBtn").removeClass("am-disabled");
+				// show dialog
+				$("#edit-ruleset-dialog").modal();
+			});
+		});
+	});
+}
+
+function fetchBiztypes(callback) {
+	// fetch biztypes
+	RestClient.get("/rule/bizType", function(bizTypes) {
+		// filter form
+		$("#filter-ruleset-form #biz_type_code").html("");
+		$("#filter-ruleset-form #biz_type_code").append("<option value='_ALL_'>所有业务类型</option>");
+		// create form
+		$("#create-ruleset-form #biz_type_code").html("");
+		// edit form
+		$("#edit-ruleset-form #biz_type_code").html("");
+		$(bizTypes).each(function(index, bizType) {
+			if (bizType.code == currentBizTypeCode) {
+				// it's current bizType, selected
+				$("#filter-ruleset-form #biz_type_code").append("<option value='" + bizType.code + "' selected>" + bizType.code 
+						+ " " + bizType.name + "</option>");
+			} else {
+				$("#filter-ruleset-form #biz_type_code").append("<option value='" + bizType.code + "'>" + bizType.code 
+						+ " " + bizType.name + "</option>");
+			}
+			$("#create-ruleset-form #biz_type_code").append("<option value='" + bizType.code + "'>" + bizType.code 
+					+ " " + bizType.name + "</option>");
+			$("#edit-ruleset-form #biz_type_code").append("<option value='" + bizType.code + "'>" + bizType.code 
+					+ " " + bizType.name + "</option>");
+		});
+		// callback
+		if (callback) {
+			callback(bizTypes);
+		}
+	});
+}
+
+function getRules(bizTypeCode, callback) {
+	// get rules by bizTypeCode
+	RestClient.get("/rule/bizType/" + bizTypeCode + "/rule", callback);
+}
+
+$(document).ready(function() {
+	// get bizTypes
+	fetchBiztypes();
+	// get rulesets
+	getRulesets();
+	
+	$("#filter-ruleset-form #biz_type_code").change(function() {
+		currentBizTypeCode = $(this).val();
+		getRulesets();
+	});
+	
+	$("#create-ruleset-form #biz_type_code").change(function() {
+		var bizTypeCode = $(this).val();
+		// get rules by bizTypeCode
+		getRules(bizTypeCode, function(rules) {
+			// show rules
+			var box = $("#create-ruleset-form #rulesSelectBox");
+			box.html("");
+			$.each(rules, function(index, rule) {
+				var html = "<label><input id='rules' type='checkbox'";
+				html += " value='" + rule.code + "," + rule.version + "'>" 
+					+ rule.code + " " + rule.name + " / " + rule.version + "</label><br/>";
+				box.append(html);
+			});
+		});
+	});
+	
+	$("#edit-ruleset-form #biz_type_code").change(function() {
+		var bizTypeCode = $(this).val();
+		// get rules by bizTypeCode
+		getRules(bizTypeCode, function(rules) {
+			// show rules
+			var box = $("#edit-ruleset-form #rulesSelectBox");
+			box.html("");
+			var dataRuleSet = false;
+			$.each(rules, function(index, rule) {
+				var html = "<label><input id='rules' type='checkbox' ";
+				if (!dataRuleSet) {
+					html += "data-rule='checked'";
+					dataRuleSet = true;
+				}
+				html += " value='" + rule.code + "," + rule.version + "'>" 
+					+ rule.code + " " + rule.name + " / " + rule.version + "</label><br/>";
+				box.append(html);
+			});
+			if (currentRules) {
+				// to select the rules
+				$.each(currentRules, function(index, rule) {
+					var value = rule.code + "," + rule.version;
+					$("#edit-ruleset-form [id='rules'][value='" + value + "']").attr("checked", true);
+				});
+			}
+		});
+	});
+	
+	$("#showCreateRulesetBtn").click(function() {
+		fetchBiztypes(function(bizTypes) {
+			// trigger the bizType select to show rules
+			$("#create-ruleset-form #biz_type_code").change();
+			var validator = $("#create-ruleset-form").data('validator');
+			if (validator) {
+				validator.cleanUp();
+			}
+			// enable create btn
+			$("#createRulesetBtn").removeClass("am-disabled");
+			// show dialog
+			$("#create-ruleset-dialog").modal();
+		});
+	});
+	
+	// createRulesetBtn.click
+	$("#createRulesetBtn").click(function() {
+		// validate
+		$("#create-ruleset-form").trigger("validate");
+		var validator = $("#create-ruleset-form").data('validator');
+		if (validator.isFormValid()) {
+			// disable the btn
+			$("#createRulesetBtn").addClass("am-disabled");
+			// build the rules
+			var rules = [];
+			$("#create-ruleset-form [id='rules']:checked").each(function() {
+				var values = $(this).val().split(",");
+				rules.push({
+					code: values[0],
+					version: values[1]
+				});
+			});
+			// build the ruleset
+			var ruleset = {
+				code: $("#create-ruleset-form #code").val(),
+				ordered: $("#create-ruleset-form #ordered").val(),
+				name: $("#create-ruleset-form #name").val(),
+				comment: $("#create-ruleset-form #comment").val(),
+				biz_type_code: $("#create-ruleset-form #biz_type_code").val(),
+				rules: rules
+			};
+			// save ruleset
+			RestClient.post("/rule/ruleset", ruleset, function() {
+				// swith to selected bizType
+				currentBizTypeCode = ruleset.biz_type_code;
+				$("#filter-ruleset-form #biz_type_code").find("option[value='" + currentBizTypeCode + "']").attr("selected", true);
+				$("#create-ruleset-dialog").modal("close");
+				// get rulesets
+				getRulesets();
+			});
+		}
+	});
+	
+	$("#updateRulesetBtn").click(function() {
+		// validate
+		$("#edit-ruleset-form").trigger("validate");
+		var validator = $("#edit-ruleset-form").data('validator');
+		if (validator.isFormValid()) {
+			// disable the btn
+			$("#createRulesetBtn").addClass("am-disabled");
+			// build the rules
+			var rules = [];
+			$("#edit-ruleset-form [id='rules']:checked").each(function() {
+				var values = $(this).val().split(",");
+				rules.push({
+					code: values[0],
+					version: values[1]
+				});
+			});
+			// build the ruleset
+			var ruleset = {
+				code: currentRulsetCode,
+				name: $("#edit-ruleset-form #name").val(),
+				ordered: $("#edit-ruleset-form #ordered").val(),
+				comment: $("#edit-ruleset-form #comment").val(),
+				biz_type_code: $("#edit-ruleset-form #biz_type_code").val(),
+				rules: rules
+			};
+			// update
+			RestClient.put("/rule/ruleset/" + currentRulsetCode, ruleset, function() {
+				$("#edit-ruleset-dialog").modal("close");
+				getRulesets();
+			});
+		}
+	});
+	
+});
+
+</script>

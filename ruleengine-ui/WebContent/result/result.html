@@ -1,0 +1,489 @@
+<div class="am-cf am-padding">
+	<div class="am-fl am-cf">
+		<strong class="am-text-primary am-text-lg"><span class="am-icon-search"></span> 匹配结果查询</strong>
+	</div>
+</div>
+<hr/>
+<!-- toolbar -->
+<div class="am-g">
+	<form action="" class="am-form" data-validator-option="{focusCleanup:true}" id="result-query-form">
+		<div class="am-g am-form-group">
+			<div class="am-u-sm-2 am-margin-left">
+				<label for="biz_type_code" class="am-form-label">业务类型</label>
+			</div>
+			<div class="am-u-sm-3">
+				<select id="biz_type_code" data-am-selected="{btnSize: 'sm'}">
+				</select>
+			</div>
+			<div class="am-u-sm-2">
+				<label for="biz_code" class="am-form-label">业务代码</label>
+			</div>
+			<div class="am-u-sm-2">
+				<input type="text" id="biz_code" placeholder="业务代码" data-rule="required">
+			</div>
+			<div class="am-u-sm-3">
+				 
+			</div>
+		</div>
+		<div class="am-g am-form-group">
+			<div class="am-u-sm-2 am-margin-left">
+				<label for="ruleset_code" class="am-form-label">规则集合</label>
+			</div>
+			<div class="am-u-sm-3">
+				<select id="ruleset_code" data-am-selected="{btnSize: 'sm'}">
+					<option value="_DEFAULT_">默认规则集合</option>
+				</select>
+			</div>
+			<div class="am-u-sm-2">
+				<label for="ruleset_version" class="am-form-label">规则集合版本</label>
+			</div>
+			<div class="am-u-sm-2">
+				<select id="ruleset_version" data-am-selected="{btnSize: 'sm'}">
+					<option value="_DEFAULT_">默认版本</option>
+				</select>
+			</div>
+			<div class="am-u-sm-3">
+				 
+			</div>
+		</div>
+		<div class="am-g am-form-group">
+			<div class="am-u-sm-8">
+				 
+			</div>
+			<div class="am-u-sm-4">
+				<button type="button" class="am-btn am-btn-primary" id="resultQueryBtn">
+					<span class="am-icon-search"></span> 查询
+				</button>
+			</div>
+		</div>
+	</form>
+</div>
+
+<!-- query result table -->
+<div id="resultBox"></div>
+
+<!-- no result template -->
+<script type="text/x-handlebars-template" id="noResultTemplate">
+<hr/>
+<div class="am-g">
+	<div class="am-u-sm-12">
+		<div class="am-alert am-alert-secondary" data-am-alert>无满足条件的匹配结果<br/></div>
+	</div>
+</div>
+</script>
+
+<!-- result template -->
+<script type="text/x-handlebars-template" id="resultTemplate">
+<hr/>
+<div class="am-g">
+	<div class="am-u-sm-12">
+		<div class="am-tabs am-margin" data-am-tabs>
+			<ul class="am-tabs-nav am-nav am-nav-tabs">
+				<li class="am-active"><a href="#resultTab1">是否接受型的规则</a></li>
+				<li><a href="#resultTab2">评分型的规则</a></li>
+			</ul>
+			<div class="am-tabs-bd">
+				<div class="am-tab-panel am-fade am-in am-active" id="resultTab1">
+					<table class="am-table am-table-striped am-table-hover">
+					<thead>
+						<tr>
+							<th>规则code</th>
+							<th>规则名称</th>
+							<th>规则版本号</th>
+							<th>执行时间</th>
+							<th>执行结果</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					{{#each acceptance.matchresults}}
+						<tr>
+							<td>{{rule_code}}</td>
+							<td>{{rule_name}}</td>
+							<td>{{rule_version}}</td>
+							<td>{{time}}</td>
+							<td>{{result}}</td>
+							<td>
+								<div class="am-btn-toolbar">
+									<div class="am-btn-group am-btn-group-xs">
+										<button class="am-btn am-btn-default am-btn-xs am-text-secondary showAcceptanceDetailBtn" 
+											 data-code="{{rule_code}}"><span class="am-icon-info-circle"></span> 查看详情</button>
+									</div>
+								</div>
+							</td>
+						</tr>
+					{{/each}}
+					</tbody>
+					</table>
+				</div>
+				<div class="am-tab-panel am-fade am-in am-active" id="resultTab2">
+					<table class="am-table am-table-striped am-table-hover table-main">
+					<thead>
+						<tr>
+							<th>规则code</th>
+							<th>规则名称</th>
+							<th>规则版本号</th>
+							<th>执行时间</th>
+							<th>执行结果</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					{{#each score.matchresults}}
+						<tr>
+							<td>{{rule_code}}</td>
+							<td>{{rule_name}}</td>
+							<td>{{rule_version}}</td>
+							<td>{{time}}</td>
+							<td>{{result}}</td>
+							<td>
+								<div class="am-btn-toolbar">
+									<div class="am-btn-group am-btn-group-xs">
+										<button class="am-btn am-btn-default am-btn-xs am-text-secondary showScoreDetailBtn" 
+											 data-code="{{rule_code}}"><span class="am-icon-info-circle"></span> 查看详情</button>
+									</div>
+								</div>
+							</td>
+						</tr>
+					{{/each}}
+					</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</script>
+
+<div class="am-modal am-modal-alert" tabindex="-1" id="result-detail-dialog">
+	<div class="am-modal-dialog">
+		<div class="am-modal-hd">
+			匹配结果详情
+			<a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+		</div>
+		<div class="am-modal-bd" id="resultDetailBox">
+		</div>
+	</div>
+</div>
+
+<!-- result detail template -->
+<script type="text/x-handlebars-template" id="resultDetailTemplate">
+<div class="am-g">
+	<table class="am-table am-table-striped am-table-hover am-table-bordered am-table-compact" id="stagesTable">
+	<thead>
+		<tr>
+			<th id="afterStageId">规则</th>
+			<th>匹配结果</th>
+			<th>执行时间(ms)</th>
+			<th>追踪信息</th>
+		</tr>
+	</thead>
+	<tbody>
+	
+	</tbody>
+	</table>
+</div>
+</script>
+
+<script type="text/javascript">
+
+var condition = {
+	bizTypeCode: null,
+	bizCode: null,
+	rulesetCode: "_DEFAULT_",
+	rulesetVersion: "_DEFAULT_"
+};
+
+var currentResult = null;
+
+function getRulesets() {
+	RestClient.get(url = "/rule/bizType/" + condition.bizTypeCode + "/ruleset", function(rulesets) {
+		$("#result-query-form #ruleset_code").html("");
+		$("#result-query-form #ruleset_code").append("<option value='_DEFAULT_,_DEFAULT_'>默认规则集合</option>");
+		$(rulesets).each(function(index, ruleset) {
+			$("#result-query-form #ruleset_code").append("<option value='" + ruleset.code + "," + ruleset.version + "'>"
+					+ ruleset.code + " " + ruleset.name + "</option>");
+		});
+		// trigger ruleset_code change
+		$("#result-query-form #ruleset_code").change();
+	});
+}
+
+function getRulesetVersions() {
+	$("#result-query-form #ruleset_version").html("");
+	$("#result-query-form #ruleset_version").append("<option value='_DEFAULT_'>默认版本</option>");
+	if (condition.rulesetVersion != "_DEFAULT_") {
+		$("#result-query-form #ruleset_version").append("<option value='" + condition.rulesetVersion + "'>" 
+				+ condition.rulesetVersion + " (最新版本)</option>");
+	}
+	if (condition.rulesetCode != "_DEFAULT_") {
+		RestClient.get("/rule/ruleset/" + condition.rulesetCode + "/history", function(histories) {
+			if (histories) {
+				$.each(histories, function(index, history) {
+					$("#result-query-form #ruleset_version").append("<option value='" + history.version + "'>" 
+							+ history.version + "</option>");
+				});
+			}
+		});
+	}
+}
+
+function fetchBiztypes() {
+	// fetch biztypes
+	RestClient.get("/rule/bizType", function(bizTypes) {
+		// form
+		$("#result-query-form #biz_type_code").html("");
+		$(bizTypes).each(function(index, bizType) {
+			if (bizType.code == condition.bizTypeCode) {
+				// it's current bizType, selected
+				$("#result-query-form #biz_type_code").append("<option value='" + bizType.code + "' selected>" + bizType.code 
+						+ " " + bizType.name + "</option>");
+			} else {
+				$("#result-query-form #biz_type_code").append("<option value='" + bizType.code + "'>" + bizType.code 
+						+ " " + bizType.name + "</option>");
+			}
+		});
+		// trigger the biz_type_code change
+		$("#result-query-form #biz_type_code").change();
+	});
+}
+
+function processDetailBtns() {
+	$(".showAcceptanceDetailBtn").click(function() {
+		var code = $(this).data("code");
+		var rule = findRuleFromResult("acceptance", code);
+		showDetail(rule);
+	});
+	$(".showScoreDetailBtn").click(function() {
+		var code = $(this).data("code");
+		var rule = findRuleFromResult("score", code);
+		showDetail(rule);
+	});
+}
+
+function getSubStagesCount(stage, counter) {
+	counter.count++;
+	if (stage.stages) {
+		$.each(stage.stages, function(i, s) {
+			getSubStagesCount(s, counter);
+		});
+	}
+}
+
+function showDetailStages(stages, status, totalDepth) {
+	$.each(stages, function(i, stage) {
+		// get stages count of this stage
+		var counter = {
+			count: 0
+		};
+		getSubStagesCount(stage, counter);
+		var subStagesCount = counter.count;
+		// show this stage
+		var traces = "";
+		if (stage.traces) {
+			$.each(stage.traces, function(i2, t) {
+				traces += t + "<br/>";
+			});
+		}
+		var row = null;
+		if (stage.parent_stage_id == 0) {
+			row = $("<tr style='text-align: left'>");
+		} else {
+			row = $("<tr style='text-align: left'>");
+		}
+		row.append($("<td rowspan='" + subStagesCount 
+				+ "' style='vertical-align: middle; text-align: center'>" + stage.stage_id + "</td>"));
+		if (totalDepth - status.depth > 0) {
+			// blank <td> to keep the place
+			row.append($("<td colspan='" + (totalDepth - status.depth) + "'> </td>"));
+		}
+		row.append($("<td>" + stage.rule_code + " / " + stage.rule_name + " / " + stage.rule_version + "</td>"))
+			.append($("<td>" + stage.result + "</td>"))
+			.append($("<td>" + stage.time_in_ms + "</td>"))
+			.append($("<td>" + traces + "</td>"));
+		$("#resultDetailBox #stagesTable").append(row);
+		// show sub-stages
+		if (stage.stages) {
+			status.depth++;
+			showDetailStages(stage.stages, status, totalDepth);
+			status.depth--;
+		}
+	});
+}
+
+function showDetail(rule) {
+	if (!rule) {
+		return;
+	}
+	var stageTree = buildStageTree(rule);
+	$("#resultDetailBox #stagesTable").remove();
+	var template = Handlebars.compile($("#resultDetailTemplate").text());
+	var html = template({});
+	$("#resultDetailBox").html(html);
+	// show depth
+	$("#resultDetailBox #stagesTable #afterStageId").before($("<th colspan='" + stageTree.depth + "'>阶段序号</th>"));
+	var status = {
+		depth: 1
+	};
+	showDetailStages(stageTree.stages, status, stageTree.depth);
+	$("#result-detail-dialog").modal({
+		width: 1000
+	});
+}
+
+function buildStageTree(rule) {
+	var stageTree = {
+		stages: [],
+		depth: 0,
+		total: rule.stages.length,
+		currentDepth: 0
+	};
+	// get depth
+	var parentIds = [];
+	$.each(rule.stages, function(i, stage) {
+		if (stage.parent_stage_id != 0) {
+			if ($.inArray("" + stage.parent_stage_id, parentIds) == -1) {
+				parentIds.push("" + stage.parent_stage_id);
+			}
+		}
+	});
+	// stageTree.depth = parentIds.length;
+	// get all top stages
+	stageTree.depth++;
+	stageTree.currentDepth++;
+	$.each(rule.stages, function(i, stage) {
+		if (stage.parent_stage_id == 0) {
+			// clone
+			var s = {};
+			$.extend(s, stage);
+			stageTree.stages.push(s);
+		}
+	});
+	// others
+	$.each(rule.stages, function(i, stage) {
+		if (stage.parent_stage_id != 0) {
+			stageTree.currentDepth++;
+			addToStageTree(stage, stageTree.stages, stageTree);
+			stageTree.currentDepth--;
+		}
+	});
+	// return the tree
+	return stageTree;
+}
+
+function addToStageTree(stage, stages, stageTree) {
+	// find the parent stage
+	var parent = null;
+	$.each(stages, function(i, s) {
+		if (s.stage_id == stage.parent_stage_id) {
+			parent = s;
+			return false;
+		}
+		if (s.stages) {
+			// next level
+			stageTree.currentDepth++;
+			addToStageTree(stage, s.stages, stageTree);
+			stageTree.currentDepth--;
+		}
+	});
+	if (parent) {
+		// got the parent
+		if (!parent.stages) {
+			// initialize the sub-stages
+			parent.stages = [];
+		}
+		// push the stage to parent.stages
+		// clone
+		var s = {};
+		$.extend(s, stage);
+		parent.stages.push(s);
+		// update depth
+		if (stageTree.currentDepth > stageTree.depth) {
+			stageTree.depth = stageTree.currentDepth;
+		}
+	}
+}
+
+function findRuleFromResult(matchType, code) {
+	var rule = null;
+	if (matchType == "acceptance") {
+		// acceptance
+		$.each(currentResult.acceptance.matchresults, function(index, r) {
+			if (r.rule_code == code) {
+				rule = r;
+				return false;
+			}
+		});
+	} else {
+		// score
+		$.each(currentResult.score.matchresults, function(index, r) {
+			if (r.rule_code == code) {
+				rule = r;
+				return false;
+			}
+		});
+	}
+	return rule;
+}
+
+$(document).ready(function() {
+	// get bizTypes
+	fetchBiztypes();
+	
+	$("#result-query-form #biz_type_code").change(function() {
+		condition.bizTypeCode = $(this).val();
+		// get rulesets
+		getRulesets();
+	});
+	
+	$("#result-query-form #ruleset_code").change(function() {
+		var a = $(this).val().split(",");
+		condition.rulesetCode = a[0];
+		condition.rulesetVersion = a[1];
+		// get ruleset versions
+		getRulesetVersions();
+	});
+	
+	$("#resultQueryBtn").click(function() {
+		// validate
+		$("#result-query-form").trigger("validate");
+		var validator = $("#result-query-form").data('validator');
+		if (validator.isFormValid()) {
+			condition.bizCode = $("#result-query-form #biz_code").val();
+			condition.matchType = $("#result-query-form #match_type").val();
+			condition.rulesetCode = $("#result-query-form #ruleset_code").val().split(",")[0];
+			condition.rulesetVersion = $("#result-query-form #ruleset_version").val();
+			// url
+			var url = "/result/" + condition.bizTypeCode;
+			if (condition.rulesetCode != "_DEFAULT_" && condition.rulesetVersion != "_DEFAULT_") {
+				// with ruleset
+				url += "/" + condition.rulesetCode + "/" + condition.rulesetVersion + "/" + condition.bizCode;
+			} else {
+				// without ruleset
+				url += "/" + condition.bizCode;
+			}
+			// query
+			RestClient.get(url, function(result) {
+				currentResult = result;
+				var template = Handlebars.compile($("#resultTemplate").text());
+				var datas = {
+					acceptance: result.acceptance,
+					score: result.score
+				};
+				var html = template(datas);
+				$("#resultBox").html(html);
+				processDetailBtns();
+			}, function(result) {
+				currentResult = null;
+				if (result.status == 404) {
+					var template = Handlebars.compile($("#noResultTemplate").text());
+					var datas = {};
+					var html = template(datas);
+					$("#resultBox").html(html);
+				}
+			});
+		}
+	});
+	
+});
+</script>
